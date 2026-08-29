@@ -127,22 +127,6 @@
         .marker-goal { background: #ffeb3b; border: 1px solid #000; box-shadow: 0 0 6px #ffeb3b; }
         .marker-shot { background: #ff455b; }
 
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 1000;
-            padding: 10px; box-sizing: border-box;
-        }
-        .modal-content {
-            background: var(--panel-bg); border: 2px solid var(--accent); padding: 20px;
-            border-radius: 12px; width: 100%; max-width: 440px; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.8); text-align: left; box-sizing: border-box;
-        }
-        .modal-content h3 { color: var(--accent); margin-top: 0; margin-bottom: 15px; text-align: center; }
-        .admin-group { margin-bottom: 18px; border-bottom: 1px solid #444; padding-bottom: 14px; }
-        .admin-group label { font-size: 12px; color: var(--primary); font-weight: bold; display: block; margin-bottom: 8px; }
-        .admin-btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .modal-content button { width: 100%; margin-top: 4px; padding: 7px; font-size: 12px; }
-        .modal-content input, .modal-content select { width: 100%; padding: 6px; margin: 4px 0; background: #111; border: 1px solid #555; color: #fff; border-radius: 4px; box-sizing: border-box; font-size: 13px; }
-
         body.ultra-mode {
             --bg-color: #03001e;
             --panel-bg: rgba(15, 12, 41, 0.85);
@@ -190,6 +174,7 @@
 </div>
 
 <div class="dashboard">
+    <!-- HOME Panel -->
     <div class="panel">
         <div class="team-name" contenteditable="true" id="teamAName">HOME</div>
         <div class="formation">
@@ -203,7 +188,13 @@
             <span>⚽ 得点</span>
             <div><button onclick="addGoalDetail('HOME', 'scoreA')">＋ (詳細)</button> <button onclick="updateStat('scoreA', -1, '')">－</button></div>
         </div>
-        <div class="stat-row"><span>⚠️ ファウル</span> <span id="foulA">0</span> <button class="btn-small" onclick="updateStat('foulA', 1, 'HOME ファウル')">＋</button></div>
+        <div class="stat-row">
+            <span>⚠️ ファウル</span> <span id="foulA">0</span>
+            <div>
+                <button class="btn-small" onclick="updateStat('foulA', 1, 'HOME ファウル')">＋</button>
+                <button class="btn-small" onclick="updateStat('foulA', -1, '↩️ HOME ファウル取消')">－</button>
+            </div>
+        </div>
         
         <div class="stat-row" style="flex-direction: column; align-items: flex-start; gap: 8px;">
             <span>カード</span> 
@@ -259,12 +250,51 @@
                 <button class="btn-small" onclick="updateStat('offA', -1, '↩️ HOME オフサイド取消')">－</button>
             </div>
         </div>
+
+        <!-- オフサイドの下に追加された便利な5つの機能 -->
+        <div class="stat-row">
+            <span>🎯 枠内シュート</span> <span id="targetShotA">0</span>
+            <div>
+                <button class="btn-small" onclick="updateStat('targetShotA', 1, 'HOME 枠内シュート')">＋</button>
+                <button class="btn-small" onclick="updateStat('targetShotA', -1, '↩️ HOME 枠内シュート取消')">－</button>
+            </div>
+        </div>
+        <div class="stat-row">
+            <span>🛡️ GKセーブ</span> <span id="saveA">0</span>
+            <div>
+                <button class="btn-small" onclick="updateStat('saveA', 1, 'HOME GKセーブ')">＋</button>
+                <button class="btn-small" onclick="updateStat('saveA', -1, '↩️ HOME GKセーブ取消')">－</button>
+            </div>
+        </div>
+        <div class="stat-row">
+            <span>⚽ フリーキック</span> <span id="fkA">0</span>
+            <div>
+                <button class="btn-small" onclick="updateStat('fkA', 1, 'HOME フリーキック')">＋</button>
+                <button class="btn-small" onclick="updateStat('fkA', -1, '↩️ HOME フリーキック取消')">－</button>
+            </div>
+        </div>
+        <div class="stat-row">
+            <span>🤾 スローイン</span> <span id="throwA">0</span>
+            <div>
+                <button class="btn-small" onclick="updateStat('throwA', 1, 'HOME スローイン')">＋</button>
+                <button class="btn-small" onclick="updateStat('throwA', -1, '↩️ HOME スローイン取消')">－</button>
+            </div>
+        </div>
+        <div class="stat-row">
+            <span>⚔️ ボール奪取</span> <span id="tackleA">0</span>
+            <div>
+                <button class="btn-small" onclick="updateStat('tackleA', 1, 'HOME ボール奪取')">＋</button>
+                <button class="btn-small" onclick="updateStat('tackleA', -1, '↩️ HOME ボール奪取取消')">－</button>
+            </div>
+        </div>
+
         <div style="text-align:center; font-size:12px; margin-top:20px; font-weight: bold;">PK戦 (クリックで ◯ / ✖)</div>
         <div class="pk-area" id="pkA">
             <div class="pk-box" onclick="togglePK(this)">-</div><div class="pk-box" onclick="togglePK(this)">-</div><div class="pk-box" onclick="togglePK(this)">-</div><div class="pk-box" onclick="togglePK(this)">-</div><div class="pk-box" onclick="togglePK(this)">-</div>
         </div>
     </div>
 
+    <!-- Center Panel -->
     <div class="panel center-panel">
         <div class="header-sub-info" id="headerSubInfo">現在時刻: 00:00:00 | 試合時間: [00:00]</div>
         <div class="timer" id="timerDisplay">00:00</div>
@@ -347,6 +377,7 @@
         </div>
     </div>
 
+    <!-- AWAY Panel -->
     <div class="panel">
         <div class="team-name" contenteditable="true" id="teamBName">AWAY</div>
         <div class="formation">
@@ -360,7 +391,13 @@
             <span>⚽ 得点</span>
             <div><button onclick="addGoalDetail('AWAY', 'scoreB')">＋ (詳細)</button> <button onclick="updateStat('scoreB', -1, '')">－</button></div>
         </div>
-        <div class="stat-row"><span>⚠️ ファウル</span> <span id="foulB">0</span> <button class="btn-small" onclick="updateStat('foulB', 1, 'AWAY ファウル')">＋</button></div>
+        <div class="stat-row">
+            <span>⚠️ ファウル</span> <span id="foulB">0</span>
+            <div>
+                <button class="btn-small" onclick="updateStat('foulB', 1, 'AWAY ファウル')">＋</button>
+                <button class="btn-small" onclick="updateStat('foulB', -1, '↩️ AWAY ファウル取消')">－</button>
+            </div>
+        </div>
         
         <div class="stat-row" style="flex-direction: column; align-items: flex-start; gap: 8px;">
             <span>カード</span> 
@@ -416,6 +453,44 @@
                 <button class="btn-small" onclick="updateStat('offB', -1, '↩️ AWAY オフサイド取消')">－</button>
             </div>
         </div>
+
+        <!-- オフサイドの下に追加された便利な5つの機能 -->
+        <div class="stat-row">
+            <span>🎯 枠内シュート</span> <span id="targetShotB">0</span>
+            <div>
+                <button class="btn-small" onclick="updateStat('targetShotB', 1, 'AWAY 枠内シュート')">＋</button>
+                <button class="btn-small" onclick="updateStat('targetShotB', -1, '↩️ AWAY 枠内シュート取消')">－</button>
+            </div>
+        </div>
+        <div class="stat-row">
+            <span>🛡️ GKセーブ</span> <span id="saveB">0</span>
+            <div>
+                <button class="btn-small" onclick="updateStat('saveB', 1, 'AWAY GKセーブ')">＋</button>
+                <button class="btn-small" onclick="updateStat('saveB', -1, '↩️ AWAY GKセーブ取消')">－</button>
+            </div>
+        </div>
+        <div class="stat-row">
+            <span>⚽ フリーキック</span> <span id="fkB">0</span>
+            <div>
+                <button class="btn-small" onclick="updateStat('fkB', 1, 'AWAY フリーキック')">＋</button>
+                <button class="btn-small" onclick="updateStat('fkB', -1, '↩️ AWAY フリーキック取消')">－</button>
+            </div>
+        </div>
+        <div class="stat-row">
+            <span>🤾 スローイン</span> <span id="throwB">0</span>
+            <div>
+                <button class="btn-small" onclick="updateStat('throwB', 1, 'AWAY スローイン')">＋</button>
+                <button class="btn-small" onclick="updateStat('throwB', -1, '↩️ AWAY スローイン取消')">－</button>
+            </div>
+        </div>
+        <div class="stat-row">
+            <span>⚔️ ボール奪取</span> <span id="tackleB">0</span>
+            <div>
+                <button class="btn-small" onclick="updateStat('tackleB', 1, 'AWAY ボール奪取')">＋</button>
+                <button class="btn-small" onclick="updateStat('tackleB', -1, '↩️ AWAY ボール奪取取消')">－</button>
+            </div>
+        </div>
+
         <div style="text-align:center; font-size:12px; margin-top:20px; font-weight: bold;">PK戦 (クリックで ◯ / ✖)</div>
         <div class="pk-area" id="pkB">
             <div class="pk-box" onclick="togglePK(this)">-</div><div class="pk-box" onclick="togglePK(this)">-</div><div class="pk-box" onclick="togglePK(this)">-</div><div class="pk-box" onclick="togglePK(this)">-</div><div class="pk-box" onclick="togglePK(this)">-</div>
@@ -502,19 +577,26 @@
         document.getElementById('estimatedAT').innerText = "0";
         document.getElementById('timerDisplay').innerText = formatTime(seconds);
         document.getElementById('pitchMarkers').innerHTML = "";
+
+        // スタッツ全リセット
+        ['targetShotA', 'targetShotB', 'saveA', 'saveB', 'fkA', 'fkB', 'throwA', 'throwB', 'tackleA', 'tackleB', 'foulA', 'foulB', 'shotA', 'shotB', 'ckA', 'ckB', 'offA', 'offB'].forEach(id => {
+            let el = document.getElementById(id);
+            if (el) el.innerText = "0";
+        });
+
         updatePossessionUI();
         updatePageTitle();
         logAction("🔄 タイマー＆スタッツをリセット");
     }
 
-    /* 新機能 1: 自動アディショナルタイム（AT）推定計算 */
+    /* 自動アディショナルタイム（AT）推定計算 */
     function addLossTime(sec) {
         totalLossSeconds += sec;
         let estMin = Math.round(totalLossSeconds / 60);
         document.getElementById('estimatedAT').innerText = estMin;
     }
 
-    /* 新機能 2: 前後半 タイムアップ自動検知 ＆ ホイッスル吹鳴 */
+    /* 前後半 タイムアップ自動検知 ＆ ホイッスル吹鳴 */
     function checkTimeUp() {
         let targetMin = parseInt(document.getElementById('halfDurationSelect').value, 10);
         if (seconds === targetMin * 60) {
@@ -523,7 +605,7 @@
         }
     }
 
-    /* 新機能 3: 背番号・詳細付きイベント追加 (得点・カード・交代) */
+    /* 背番号・詳細付きイベント追加 (得点・カード・交代) */
     function addGoalDetail(team, elId) {
         let playerNum = prompt(`${team} 得点者の背番号または名前を入力:`);
         let assistNum = prompt(`アシスト者の背番号または名前 (任意):`);
@@ -532,7 +614,7 @@
         let detail = `${team} ゴール！ ⚽ [背番号: ${playerNum || '不明'}]`;
         if (assistNum) detail += ` (アシスト: ${assistNum})`;
         logAction(detail);
-        addLossTime(40); // ゴール時40秒ロスタイム加算
+        addLossTime(40);
     }
 
     function addCardDetail(team, elId, cardType) {
@@ -547,10 +629,10 @@
         let pIn = prompt(`${team} 交代 IN 選手の背番号:`);
         updateStat(elId, -1);
         logAction(`🔄 ${team} 選手交代: [OUT: #${pOut || '?'}] ➔ [IN: #${pIn || '?'}]`);
-        addLossTime(30); // 交代1回につき30秒加算
+        addLossTime(30);
     }
 
-    /* 新機能 4: ピッチイベントマップ (シュート・ゴール位置視覚記録) */
+    /* ピッチイベントマップ (シュート・ゴール位置視覚記録) */
     function recordPitchEvent(e) {
         const rect = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -567,7 +649,7 @@
         logAction(`📍 位置マップ記録: ${isGoal ? '⚽ ゴール位置' : '👟 シュート位置'}`);
     }
 
-    /* 新機能 5: ワンクリック マッチレポートテキスト出力＆コピー */
+    /* ワンクリック マッチレポートテキスト出力＆コピー */
     function generateMatchReport() {
         let teamA = document.getElementById('teamAName').innerText;
         let teamB = document.getElementById('teamBName').innerText;
@@ -581,6 +663,12 @@
                      `------------------------\n` +
                      `■ ポゼッション: ${teamA} ${pA} - ${pB} ${teamB}\n` +
                      `■ シュート数: ${teamA} ${document.getElementById('shotA').innerText} - ${document.getElementById('shotB').innerText} ${teamB}\n` +
+                     `■ 枠内シュート: ${teamA} ${document.getElementById('targetShotA').innerText} - ${document.getElementById('targetShotB').innerText} ${teamB}\n` +
+                     `■ GKセーブ: ${teamA} ${document.getElementById('saveA').innerText} - ${document.getElementById('saveB').innerText} ${teamB}\n` +
+                     `■ フリーキック: ${teamA} ${document.getElementById('fkA').innerText} - ${document.getElementById('fkB').innerText} ${teamB}\n` +
+                     `■ スローイン: ${teamA} ${document.getElementById('throwA').innerText} - ${document.getElementById('throwB').innerText} ${teamB}\n` +
+                     `■ ボール奪取: ${teamA} ${document.getElementById('tackleA').innerText} - ${document.getElementById('tackleB').innerText} ${teamB}\n` +
+                     `■ ファウル: ${teamA} ${document.getElementById('foulA').innerText} - ${document.getElementById('foulB').innerText} ${teamB}\n` +
                      `■ イエローカード: ${teamA} ${document.getElementById('yellowA').innerText} - ${document.getElementById('yellowB').innerText} ${teamB}\n` +
                      `■ レッドカード: ${teamA} ${document.getElementById('redA').innerText} - ${document.getElementById('redB').innerText} ${teamB}\n\n` +
                      `【主な経過・ログ】\n` + document.getElementById('matchLog').value;
@@ -594,7 +682,8 @@
 
     function updateStat(id, change, msg) {
         let el = document.getElementById(id);
-        let currentVal = parseInt(el.innerText);
+        if (!el) return;
+        let currentVal = parseInt(el.innerText) || 0;
         if (currentVal + change < 0) return;
         el.innerText = currentVal + change;
         if (msg) logAction(msg);
@@ -659,10 +748,6 @@
         let inputPin = prompt("管理者PINを入力してください:");
         if (inputPin === adminPin) document.getElementById('adminModal').style.display = 'flex';
         else if (inputPin !== null) alert("PINが間違っています。");
-    }
-
-    function closeAdminMenu() {
-        document.getElementById('adminModal').style.display = 'none';
     }
 
     function setHalfTimeStatus() {
