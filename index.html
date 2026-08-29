@@ -186,7 +186,7 @@
         <div class="score" id="scoreA">0</div>
         <div class="stat-row">
             <span>⚽ 得点</span>
-            <div><button onclick="addGoalDetail('HOME', 'scoreA')">＋ (詳細)</button> <button onclick="updateStat('scoreA', -1, '')">－</button></div>
+            <div><button onclick="addGoalDetail('HOME', 'scoreA')">＋</button> <button onclick="updateStat('scoreA', -1, '')">－</button></div>
         </div>
         <div class="stat-row">
             <span>⚠️ ファウル</span> <span id="foulA">0</span>
@@ -251,7 +251,6 @@
             </div>
         </div>
 
-        <!-- オフサイドの下に追加された便利な5つの機能 -->
         <div class="stat-row">
             <span>🎯 枠内シュート</span> <span id="targetShotA">0</span>
             <div>
@@ -389,7 +388,7 @@
         <div class="score" id="scoreB">0</div>
         <div class="stat-row">
             <span>⚽ 得点</span>
-            <div><button onclick="addGoalDetail('AWAY', 'scoreB')">＋ (詳細)</button> <button onclick="updateStat('scoreB', -1, '')">－</button></div>
+            <div><button onclick="addGoalDetail('AWAY', 'scoreB')">＋</button> <button onclick="updateStat('scoreB', -1, '')">－</button></div>
         </div>
         <div class="stat-row">
             <span>⚠️ ファウル</span> <span id="foulB">0</span>
@@ -454,7 +453,6 @@
             </div>
         </div>
 
-        <!-- オフサイドの下に追加された便利な5つの機能 -->
         <div class="stat-row">
             <span>🎯 枠内シュート</span> <span id="targetShotB">0</span>
             <div>
@@ -505,7 +503,6 @@
     let activeTeam = 'NONE', possA_sec = 0, possB_sec = 0;
     let adminPin = localStorage.getItem('adminPin') || "0827";
     
-    // 自動AT計算用ロスタイム積算 (秒)
     let totalLossSeconds = 0;
 
     function toggleUltraMode() {
@@ -578,8 +575,7 @@
         document.getElementById('timerDisplay').innerText = formatTime(seconds);
         document.getElementById('pitchMarkers').innerHTML = "";
 
-        // スタッツ全リセット
-        ['targetShotA', 'targetShotB', 'saveA', 'saveB', 'fkA', 'fkB', 'throwA', 'throwB', 'tackleA', 'tackleB', 'foulA', 'foulB', 'shotA', 'shotB', 'ckA', 'ckB', 'offA', 'offB'].forEach(id => {
+        ['targetShotA', 'targetShotB', 'saveA', 'saveB', 'fkA', 'fkB', 'throwA', 'throwB', 'tackleA', 'tackleB', 'foulA', 'foulB', 'shotA', 'shotB', 'ckA', 'ckB', 'offA', 'offB', 'scoreA', 'scoreB'].forEach(id => {
             let el = document.getElementById(id);
             if (el) el.innerText = "0";
         });
@@ -589,14 +585,12 @@
         logAction("🔄 タイマー＆スタッツをリセット");
     }
 
-    /* 自動アディショナルタイム（AT）推定計算 */
     function addLossTime(sec) {
         totalLossSeconds += sec;
         let estMin = Math.round(totalLossSeconds / 60);
         document.getElementById('estimatedAT').innerText = estMin;
     }
 
-    /* 前後半 タイムアップ自動検知 ＆ ホイッスル吹鳴 */
     function checkTimeUp() {
         let targetMin = parseInt(document.getElementById('halfDurationSelect').value, 10);
         if (seconds === targetMin * 60) {
@@ -605,15 +599,10 @@
         }
     }
 
-    /* 背番号・詳細付きイベント追加 (得点・カード・交代) */
+    /* 得点追加 (詳細なし・ワンタップ追加) */
     function addGoalDetail(team, elId) {
-        let playerNum = prompt(`${team} 得点者の背番号または名前を入力:`);
-        let assistNum = prompt(`アシスト者の背番号または名前 (任意):`);
-        
         updateStat(elId, 1);
-        let detail = `${team} ゴール！ ⚽ [背番号: ${playerNum || '不明'}]`;
-        if (assistNum) detail += ` (アシスト: ${assistNum})`;
-        logAction(detail);
+        logAction(`${team} ゴール！ ⚽`);
         addLossTime(40);
     }
 
@@ -632,7 +621,6 @@
         addLossTime(30);
     }
 
-    /* ピッチイベントマップ (シュート・ゴール位置視覚記録) */
     function recordPitchEvent(e) {
         const rect = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -649,7 +637,6 @@
         logAction(`📍 位置マップ記録: ${isGoal ? '⚽ ゴール位置' : '👟 シュート位置'}`);
     }
 
-    /* ワンクリック マッチレポートテキスト出力＆コピー */
     function generateMatchReport() {
         let teamA = document.getElementById('teamAName').innerText;
         let teamB = document.getElementById('teamBName').innerText;
