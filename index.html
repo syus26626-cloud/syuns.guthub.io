@@ -3,802 +3,891 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">サッカー総合管理スコアボード</title>
+    <title>超高機能 POS ＆ 商品マスター管理システム</title>
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 500: '#2563eb', 600: '#1d4ed8' }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --bg-color: #0b0c10;
-            --panel-bg: #1f2833;
-            --primary: #45f3ff;
-            --accent: #ff455b;
-            --text-color: #c5c6c7;
-            --whistle-color: #00e676;
-        }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; transition: background 0.5s ease; }
-        
-        .header-container { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin-bottom: 25px; }
-        .header-top { display: flex; align-items: center; justify-content: center; width: 100%; position: relative; min-height: 42px; }
-        h1 { text-align: center; color: var(--primary); font-size: 24px; margin: 0; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
-        
-        .header-sub-info {
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            color: #ffeb3b;
-            margin-bottom: 16px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 6px 16px;
-            border-radius: 4px;
-            border: 1px solid rgba(255, 235, 59, 0.2);
-            text-align: center;
-        }
-        
-        .header-left-actions {
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .home-btn {
-            background: var(--panel-bg); border: 1px solid var(--primary); color: var(--primary);
-            width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            text-decoration: none; font-size: 18px; box-shadow: 0 4px 8px rgba(0,0,0,0.4); transition: 0.2s; cursor: pointer; flex-shrink: 0;
-        }
-        .home-btn:hover { background-color: var(--primary); color: #000; transform: scale(1.05); }
-
-        .ultra-btn {
-            background: linear-gradient(45deg, #ff007f, #7928ca);
-            border: 1px solid #00f6ff;
-            color: #fff;
-            padding: 0 12px; height: 38px; border-radius: 19px; display: flex; align-items: center; justify-content: center;
-            text-decoration: none; font-size: 12px; font-weight: bold; box-shadow: 0 0 10px rgba(255, 0, 127, 0.5); transition: 0.3s; cursor: pointer;
-            white-space: nowrap;
-        }
-        .ultra-btn:hover { transform: scale(1.08); box-shadow: 0 0 20px rgba(0, 246, 255, 0.8); }
-
-        .admin-login-btn {
-            background: var(--panel-bg); border: 1px solid var(--accent); color: var(--accent);
-            padding: 0 12px; height: 38px; border-radius: 19px; display: flex; align-items: center; justify-content: center;
-            text-decoration: none; font-size: 12px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.4); transition: 0.2s; cursor: pointer;
-            white-space: nowrap;
-        }
-        .admin-login-btn:hover { background-color: var(--accent); color: #fff; transform: scale(1.05); }
-
-        .ht-btn {
-            background: var(--panel-bg); border: 1px solid #e65100; color: #ffeb3b;
-            padding: 0 12px; height: 38px; border-radius: 19px; display: flex; align-items: center; justify-content: center;
-            text-decoration: none; font-size: 12px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.4); transition: 0.2s; cursor: pointer;
-            white-space: nowrap;
-        }
-        .ht-btn:hover { background-color: #e65100; color: #fff; transform: scale(1.05); }
-
-        .at-btn {
-            background: var(--panel-bg); border: 1px solid #0288d1; color: #40c4ff;
-            padding: 0 12px; height: 38px; border-radius: 19px; display: flex; align-items: center; justify-content: center;
-            text-decoration: none; font-size: 12px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.4); transition: 0.2s; cursor: pointer;
-            white-space: nowrap;
-        }
-        .at-btn:hover { background-color: #0288d1; color: #fff; transform: scale(1.05); }
-
-        .dashboard { display: grid; grid-template-columns: 1.1fr 1.3fr 1.1fr; gap: 30px; }
-        .panel { background-color: var(--panel-bg); padding: 20px; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.05); box-sizing: border-box; transition: 0.3s; }
-        .center-panel { display: flex; flex-direction: column; align-items: center; }
-        
-        .team-name { font-size: 22px; font-weight: bold; text-align: center; margin-bottom: 8px; border-bottom: 2px solid var(--primary); padding-bottom: 5px; color: #fff; }
-        .formation { text-align: center; margin-bottom: 20px; font-size: 13px; }
-        .formation select { background: #111; color: #fff; border: 1px solid #555; padding: 3px; border-radius: 4px; }
-        
-        .score { font-size: 70px; font-weight: bold; text-align: center; margin: 15px 0 20px 0; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.2); transition: 0.3s; }
-        .timer { font-size: 90px; font-weight: bold; color: #ffeb3b; margin-bottom: 25px; font-family: 'Courier New', monospace; text-shadow: 0 0 15px rgba(255,235,59,0.4); line-height: 1; transition: 0.3s; }
-        .stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-size: 14px; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 6px; }
-        
-        button { background-color: #2c3e50; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        button:hover { background-color: var(--primary); color: #000; }
-        .btn-small { padding: 4px 8px; font-size: 11px; }
-        .btn-green { background-color: #00e676; color: #000; }
-        .btn-yellow { background-color: #ffeb3b; color: #000; }
-        .btn-red { background-color: var(--accent); color: #fff; }
-        .btn-black { background-color: #333; color: #fff; border: 1px solid #777; }
-        
-        .card-control-box { display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.3); padding: 4px 6px; border-radius: 4px; }
-
-        .var-express-box { width: 100%; background: #2d132c; border: 2px solid #801336; border-radius: 8px; padding: 12px; box-sizing: border-box; margin-bottom: 20px; }
-        .var-title { font-size: 12px; font-weight: bold; color: #ff4b5c; text-align: center; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .var-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-var-action { background: #801336; font-size: 11px; padding: 8px 4px; border: 1px solid #ff4b5c; }
-        .btn-var-action:hover { background: #ff4b5c; color: #fff; }
-        
-        .possession-bar { width: 100%; height: 22px; background: #333; border-radius: 11px; overflow: hidden; display: flex; margin-bottom: 20px; border: 1px solid #444; }
-        .poss-a { background: #00bcd4; width: 50%; display: flex; align-items: center; justify-content: flex-start; padding-left: 8px; font-size: 11px; font-weight: bold; color: #000; transition: width 0.5s ease; }
-        .poss-b { background: #f44336; width: 50%; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 11px; font-weight: bold; color: #fff; transition: width 0.5s ease; }
-        
-        .log-area { width: 100%; height: 140px; background: #000; color: #00ff66; font-family: 'Courier New', monospace; padding: 10px; border: 1px solid #333; border-radius: 6px; box-sizing: border-box; resize: none; margin-top: 8px; font-size: 12px; }
-        
-        .pk-area { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
-        .pk-box { width: 30px; height: 30px; background: #444; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; border-radius: 50%; font-weight: bold; }
-        
-        /* ピッチトラッカー機能用スタイル */
-        .pitch-container { width: 100%; height: 120px; background: #2e7d32; border: 2px solid #fff; border-radius: 6px; position: relative; margin-top: 10px; cursor: crosshair; overflow: hidden; }
-        .pitch-line-center { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.6); }
-        .pitch-circle { position: absolute; left: 50%; top: 50%; width: 40px; height: 40px; border: 2px solid rgba(255,255,255,0.6); border-radius: 50%; transform: translate(-50%, -50%); }
-        .pitch-marker { position: absolute; width: 10px; height: 10px; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
-        .marker-goal { background: #ffeb3b; border: 1px solid #000; box-shadow: 0 0 6px #ffeb3b; }
-        .marker-shot { background: #ff455b; }
-
-        body.ultra-mode {
-            --bg-color: #03001e;
-            --panel-bg: rgba(15, 12, 41, 0.85);
-            --primary: #00f6ff;
-            --accent: #ff007f;
-            --text-color: #ffffff;
-            --whistle-color: #76ff03;
-            background: radial-gradient(circle at 50% 20%, #12002b 0%, #050014 60%, #000000 100%);
-        }
-        body.ultra-mode .panel {
-            border: 1px solid #00f6ff;
-            box-shadow: 0 0 25px rgba(0, 246, 255, 0.25), inset 0 0 15px rgba(255, 0, 127, 0.15);
-            backdrop-filter: blur(10px);
-        }
-        body.ultra-mode h1 { color: #00f6ff; text-shadow: 0 0 10px #00f6ff, 0 0 20px #ff007f; letter-spacing: 4px; }
-        body.ultra-mode .timer { color: #ff007f; text-shadow: 0 0 15px #ff007f, 0 0 30px #ff007f, 0 0 45px #ff007f; }
-        body.ultra-mode .score { color: #00f6ff; text-shadow: 0 0 20px #00f6ff, 0 0 40px #00f6ff; }
-
-        @media (max-width: 1024px) {
-            .dashboard { grid-template-columns: 1fr; gap: 20px; }
-            .center-panel { order: -1; }
-        }
-        @media (max-width: 768px) {
-            body { padding: 8px; }
-            .header-top { flex-direction: column; gap: 12px; }
-            .header-left-actions { position: static; transform: none; flex-wrap: wrap; justify-content: center; width: 100%; }
-            .timer { font-size: 64px; margin-bottom: 18px; }
-            .score { font-size: 55px; margin: 10px 0; }
+        @media print {
+            body * { visibility: hidden; }
+            #receipt-modal, #receipt-modal * { visibility: visible; }
+            #receipt-modal { position: absolute; left: 0; top: 0; width: 100%; }
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-200">
 
-<div class="header-container">
-    <div class="header-top">
-        <div class="header-left-actions">
-            <a href="#" class="home-btn" onclick="triggerReload(event)" title="ホームに戻る">🏠</a>
-            <a href="#" class="ultra-btn" onclick="toggleUltraMode()" title="ウルトラモード切替">⚡ ULTRA MODE</a>
-            <a href="#" class="admin-login-btn" onclick="openAdminMenu(event)" title="管理者メニューを開く">🔐 管理者メニュー</a>
-            <a href="#" class="ht-btn" onclick="setHalfTimeStatus()" title="ハーフタイム切替">☕ ハーフタイム</a>
-            <a href="#" class="at-btn" onclick="toggleAdditionalTime()" title="アディショナルタイム設定">⏱️ AT</a>
-        </div>
-        <h1>サッカー総合マッチマネージャー</h1>
-    </div>
-</div>
-
-<div class="dashboard">
-    <!-- HOME Panel -->
-    <div class="panel">
-        <div class="team-name" contenteditable="true" id="teamAName">HOME</div>
-        <div class="formation">
-            フォーメーション: 
-            <select onchange="logAction('HOME フォーメーション変更: ' + this.value)">
-                <option>4-4-2</option><option>4-3-3</option><option>4-2-3-1</option><option>3-5-2</option><option>3-4-3</option><option>5-3-2</option>
-            </select>
-        </div>
-        <div class="score" id="scoreA">0</div>
-        <div class="stat-row">
-            <span>⚽ 得点</span>
-            <div><button onclick="addGoalDetail('HOME', 'scoreA')">＋</button> <button onclick="updateStat('scoreA', -1, '')">－</button></div>
-        </div>
-        <div class="stat-row">
-            <span>⚠️ ファウル</span> <span id="foulA">0</span>
-            <div>
-                <button class="btn-small" onclick="updateStat('foulA', 1, 'HOME ファウル')">＋</button>
-                <button class="btn-small" onclick="updateStat('foulA', -1, '↩️ HOME ファウル取消')">－</button>
-            </div>
-        </div>
-        
-        <div class="stat-row" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-            <span>カード</span> 
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; width: 100%; justify-content: space-between;">
-                <div class="card-control-box">
-                    <span style="font-size: 11px;">🟩 <span id="greenA">0</span></span>
-                    <button class="btn-small btn-green" style="padding: 2px 5px;" onclick="addCardDetail('HOME', 'greenA', '🟩 グリーンカード')">＋</button>
-                    <button class="btn-small btn-green" style="padding: 2px 5px;" onclick="updateStat('greenA', -1, '↩️ HOME グリーンカード取消')">－</button>
-                </div>
-                <div class="card-control-box">
-                    <span style="font-size: 11px;">🟨 <span id="yellowA">0</span></span>
-                    <button class="btn-small btn-yellow" style="padding: 2px 5px;" onclick="addCardDetail('HOME', 'yellowA', '🟨 イエローカード')">＋</button>
-                    <button class="btn-small btn-yellow" style="padding: 2px 5px;" onclick="updateStat('yellowA', -1, '↩️ HOME イエローカード取消')">－</button>
-                </div>
-                <div class="card-control-box">
-                    <span style="font-size: 11px;">🟥 <span id="redA">0</span></span>
-                    <button class="btn-small btn-red" style="padding: 2px 5px;" onclick="addCardDetail('HOME', 'redA', '🟥 レッドカード')">＋</button>
-                    <button class="btn-small btn-red" style="padding: 2px 5px;" onclick="updateStat('redA', -1, '↩️ HOME レッドカード取消')">－</button>
-                </div>
-                <div class="card-control-box">
-                    <span style="font-size: 11px;">⬛ <span id="blackA">0</span></span>
-                    <button class="btn-small btn-black" style="padding: 2px 5px;" onclick="addCardDetail('HOME', 'blackA', '⬛ ブラックカード')">＋</button>
-                    <button class="btn-small btn-black" style="padding: 2px 5px;" onclick="updateStat('blackA', -1, '↩️ HOME ブラックカード取消')">－</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="stat-row">
-            <span>🔄 交代枠 (残)</span> <span id="subA">5</span>
-            <div>
-                <button class="btn-small" onclick="addSubDetail('HOME', 'subA')">交代</button>
-                <button class="btn-small" onclick="updateStat('subA', 1, '↩️ HOME 選手交代取消')">－</button>
-            </div>
-        </div>
-        <div class="stat-row">
-            <span>👟 シュート</span> <span id="shotA">0</span>
-            <div>
-                <button class="btn-small" onclick="updateStat('shotA', 1, 'HOME シュート')">＋</button>
-                <button class="btn-small" onclick="updateStat('shotA', -1, '↩️ HOME シュート取消')">－</button>
-            </div>
-        </div>
-        <div class="stat-row">
-            <span>🚩 コーナーキック</span> <span id="ckA">0</span>
-            <div>
-                <button class="btn-small" onclick="updateStat('ckA', 1, 'HOME コーナーキック')">＋</button>
-                <button class="btn-small" onclick="updateStat('ckA', -1, '↩️ HOME コーナーキック取消')">－</button>
-            </div>
-        </div>
-        <div class="stat-row">
-            <span>🛑 オフサイド</span> <span id="offA">0</span>
-            <div>
-                <button class="btn-small" onclick="updateStat('offA', 1, 'HOME オフサイド')">＋</button>
-                <button class="btn-small" onclick="updateStat('offA', -1, '↩️ HOME オフサイド取消')">－</button>
-            </div>
-        </div>
-
-        <div class="stat-row">
-            <span>🎯 枠内シュート</span> <span id="targetShotA">0</span>
-            <div>
-                <button class="btn-small" onclick="updateStat('targetShotA', 1, 'HOME 枠内シュート')">＋</button>
-                <button class="btn-small" onclick="updateStat('targetShotA', -1, '↩️ HOME 枠内シュート取消')">－</button>
-            </div>
-        </div>
-        <div class="stat-row">
-            <span>🛡️ GKセーブ</span> <span id="saveA">0</span>
-            <div>
-                <button class="btn-small" onclick="updateStat('saveA', 1, 'HOME GKセーブ')">＋</button>
-                <button class="btn-small" onclick="updateStat('saveA', -1, '↩️ HOME GKセーブ取消')">－</button>
-            </div>
-        </div>
-        <div class="stat-row">
-            <span>⚽ フリーキック</span> <span id="fkA">0</span>
-            <div>
-                <button class="btn-small" onclick="updateStat('fkA', 1, 'HOME フリーキック')">＋</button>
-                <button class="btn-small" onclick="updateStat('fkA', -1, '↩️ HOME フリーキック取消')">－</button>
-            </div>
-        </div>
-        <div class="stat-row">
-            <span>🤾 スローイン</span> <span id="throwA">0</span>
-            <div>
-                <button class="btn-small" onclick="updateStat('throwA', 1, 'HOME スローイン')">＋</button>
-                <button class="btn-small" onclick="updateStat('throwA', -1, '↩️ HOME スローイン取消')">－</button>
-            </div>
-        </div>
-        <div class="stat-row">
-            <span>⚔️ ボール奪取</span> <span id="tackleA">0</span>
-            <div>
-                <button class="btn-small" onclick="updateStat('tackleA', 1, 'HOME ボール奪取')">＋</button>
-                <button class="btn-small" onclick="updateStat('tackleA', -1, '↩️ HOME ボール奪取取消')">－</button>
-            </div>
-        </div>
-
-        <div style="text-align:center; font-size:12px; margin-top:20px; font-weight: bold;">PK戦 (クリックで ◯ / ✖)</div>
-        <div class="pk-area" id="pkA">
-            <div class="pk-box" onclick="togglePK(this)">-</div><div class="pk-box" onclick="togglePK(this)">-</div><div class="pk-box" onclick="togglePK(this)">-</div><div class="pk-box" onclick="togglePK(this)">-</div><div class="pk-box" onclick="togglePK(this)">-</div>
-        </div>
-    </div>
-
-    <!-- Center Panel -->
-    <div class="panel center-panel">
-        <div class="header-sub-info" id="headerSubInfo">現在時刻: 00:00:00 | 試合時間: [00:00]</div>
-        <div class="timer" id="timerDisplay">00:00</div>
-        
-        <div style="font-size: 12px; color: #40c4ff; margin-bottom: 10px; font-weight: bold;">
-            ⏱️ 推定ATロスタイム: <span id="estimatedAT">0</span> 分 (自動算出演算)
-        </div>
-
-        <div id="htBanner" style="display: none; width: 100%; background: rgba(230,81,0,0.2); border: 1px solid #e65100; color: #ffab40; text-align: center; padding: 6px; border-radius: 6px; font-weight: bold; font-size: 13px; margin-bottom: 15px; box-sizing: border-box;">
-            ☕ ハーフタイム (HT) 中
-        </div>
-
-        <div id="atBanner" style="display: none; width: 100%; background: rgba(2, 136, 209, 0.2); border: 1px solid #0288d1; color: #40c4ff; text-align: center; padding: 6px; border-radius: 6px; font-weight: bold; font-size: 13px; margin-bottom: 15px; box-sizing: border-box;">
-            ⏱️ アディショナルタイム: +<span id="atDisplayMinutes">0</span>分
-        </div>
-
-        <div style="display:flex; gap:12px; margin-bottom:15px; flex-wrap: wrap; justify-content: center;">
-            <button onclick="startTimer()" style="background:#4caf50; font-size: 16px;">▶ スタート</button>
-            <button onclick="stopTimer()" style="background:#ff9800; font-size: 16px;">⏸ 一時停止</button>
-            <button onclick="resetTimer()" style="background:#777; font-size: 16px;">🔄 リセット</button>
-        </div>
-
-        <div style="font-size: 11px; margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 4px;">
-            タイムアップ設定: 
-            <select id="halfDurationSelect" style="background:#111; color:#fff; border:1px solid 555; font-size:11px;">
-                <option value="45">45分ハーフ (標準)</option>
-                <option value="40">40分ハーフ</option>
-                <option value="20">20分ハーフ (フットサル/少年)</option>
-                <option value="15">15分ハーフ (8人制)</option>
-                <option value="10">10分ハーフ</option>
-            </select>
-        </div>
-
-        <div class="var-express-box">
-            <div class="var-title">🚨 VAR EXPRESS (超高速判定・自動再開)</div>
-            <div class="var-grid">
-                <button class="btn-var-action" onclick="fastVarDecision('GOAL_A')">⚽ HOME ゴール認定</button>
-                <button class="btn-var-action" onclick="fastVarDecision('GOAL_B')">⚽ AWAY ゴール認定</button>
-                <button class="btn-var-action" onclick="fastVarDecision('NO_GOAL')">❌ ゴール取消(ノーゴール)</button>
-                <button class="btn-var-action" onclick="fastVarDecision('PK')">🎯 PK判定 (プレー続行)</button>
-                <button class="btn-var-action" onclick="fastVarDecision('RED_A')">🟥 HOME 退場処分</button>
-                <button class="btn-var-action" onclick="fastVarDecision('RED_B')">🟥 AWAY 退場処分</button>
-            </div>
-        </div>
-
-        <div style="width: 100%; text-align: center; margin-bottom: 15px;">
-            <span style="font-size: 12px; font-weight: bold;">📍 シュート・ゴール位置マップ (タップで記録)</span>
-            <div class="pitch-container" onclick="recordPitchEvent(event)">
-                <div class="pitch-line-center"></div>
-                <div class="pitch-circle"></div>
-                <div id="pitchMarkers"></div>
-            </div>
-        </div>
-
-        <div style="width: 100%; text-align: center;">
-            <span style="font-size: 12px; font-weight: bold;">📊 ボールポゼッション</span>
-            <div style="display:flex; justify-content: space-between; margin: 10px 0; gap: 8px;">
-                <button class="btn-small" style="background:#00bcd4; color:#000; flex:1;" onclick="setPossession('HOME')" id="possBtnA">HOME保持中</button>
-                <button class="btn-small" style="background:#555; flex:0.5;" onclick="setPossession('NONE')">中立</button>
-                <button class="btn-small" style="background:#f44336; flex:1;" onclick="setPossession('AWAY')" id="possBtnB">AWAY保持中</button>
-            </div>
-            <div class="possession-bar">
-                <div class="poss-a" id="barA">50%</div>
-                <div class="poss-b" id="barB">50%</div>
-            </div>
-        </div>
-        
-        <div style="display:flex; gap:8px; width:100%; margin-top:8px;">
-            <button style="flex:1; background-color: var(--whistle-color); color: #000;" onclick="blowWhistle()">🔊 電子ホイッスル</button>
-            <button style="flex:1; background-color: #9c27b0;" onclick="tossCoin()">🪙 コイントス</button>
-            <button style="flex:1; background-color: #00897b;" onclick="generateMatchReport()">📋 レポート出力</button>
-        </div>
-
-        <div style="width: 100%; margin-top: 15px;">
-            <div style="font-size: 12px; display: flex; justify-content: space-between; align-items: center;">
-                <span>📜 アクションログタイムライン</span>
-                <button class="btn-small" style="background:#d32f2f;" onclick="resetLog()">🗑 ログ全削除</button>
-            </div>
-            <textarea class="log-area" id="matchLog" readonly>試合開始前...</textarea>
-        </div>
-    </div>
-
-    <!-- AWAY Panel -->
-    <div class="panel">
-        <div class="team-name" contenteditable="true" id="teamBName">AWAY</div>
-        <div class="formation">
-            フォーメーション: 
-            <select onchange="logAction('AWAY フォーメーション変更: ' + this.value)">
-                <option>4-4-2</option><option>4-3-3</option><option>4-2-3-1</option><option>3-5-2</option><option>3-4-3</option><option>5-3-2</option>
-            </select>
-        </div>
-        <div class="score" id="scoreB">0</div>
-        <div class="stat-row">
-            <span>⚽ 得点</span>
-            <div><button onclick="addGoalDetail('AWAY', 'scoreB')">＋</button> <button onclick="updateStat('scoreB', -1, '')">－</button></div>
-        </div>
-        <div class="stat-row">
-            <span>⚠️ ファウル</span> <span id="foulB">0</span>
-            <div>
-                <button class="btn-small" onclick="updateStat('foulB', 1, 'AWAY ファウル')">＋</button>
-                <button class="btn-small" onclick="updateStat('foulB', -1, '↩️ AWAY ファウル取消')">－</button>
-            </div>
-        </div>
-        
-        <div class="stat-row" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-            <span>カード</span> 
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; width: 100%; justify-content: space-between;">
-                <div class="card-control-box">
-                    <span style="font-size: 11px;">🟩 <span id="greenB">0</span></span>
-                    <button class="btn-small btn-green" style="padding: 2px 5px;" onclick="addCardDetail('AWAY', 'greenB', '🟩 グリーンカード')">＋</button>
-                    <button class="btn-small btn-green" style="padding: 2px 5px;" onclick="updateStat('greenB', -1, '↩️ AWAY グリーンカード取消')">－</button>
-                </div>
-                <div class="card-control-box">
-                    <span style="font-size: 11px;">🟨 <span id="yellowB">0</span></span>
-                    <button class="btn-small btn-yellow" style="padding: 2px 5px;" onclick="addCardDetail('AWAY', 'yellowB', '🟨 イエローカード')">＋</button>
-                    <button class="btn-small btn-yellow" style="padding: 2px 5px;" onclick="updateStat('yellowB', -1, '↩️ AWAY イエローカード取消')">－</button>
-                </div>
-                <div class="card-control-box">
-                    <span style="font-size: 11px;">🟥 <span id="redB">0</span></span>
-                    <button class="btn-small btn-red" style="padding: 2px 5px;" onclick="addCardDetail('AWAY', 'redB', '🟥 レッドカード')">＋</button>
-                    <button class="btn-small btn-red" style="padding: 2px 5px;" onclick="updateStat('redB', -1, '↩️ AWAY レッドカード取消')">－</button>
-                </div>
-                <div class="card-control-box">
-                    <span style="font-size: 11px;">⬛ <span id="blackB">0</span></span>
-                    <button class="btn-small btn-black" style="padding: 2px 5px;" onclick="addCardDetail('AWAY', 'blackB', '⬛ ブラックカード')">＋</button>
-                    <button class="btn-small btn-black" style="padding: 2px 5px;" onclick="updateStat('blackB', -1, '↩️ AWAY ブラックカード取消')">－</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="stat-row">
-            <span>🔄 交代枠 (残)</span> <span id="subB">5</span>
-            <div>
-                <button class="btn-small" onclick="addSubDetail('AWAY', 'subB')">交代</button>
-                <button class="btn-small" onclick="updateStat('subB', 1, '↩️ AWAY 選手交代取消')">－</button>
-            </div>
-        </div>
-        <div class="stat-row">
-            <span>👟 シュート</span> <span id="shotB">0</span>
-            <div>
-                <button class="btn-small" onclick="updateStat('shotB', 1, 'AWAY シュート')">＋</button>
-                <button class="btn-small" onclick="updateStat('shotB', -1, '↩️ AWAY シュート取消')">－</button>
-            </div>
-        </div>
-        <div class="stat-row">
-            <span>🚩 コーナーキック</span> <span id="ckB">0</span>
-            <div>
-                <button class="btn-small" onclick="updateStat('ckB', 1, 'AWAY コーナーキック')">＋</button>
-                <button class="btn-small" onclick="updateStat('ckB', -1, '↩️ AWAY コーナーキック取消')">－</button>
-            </div>
-        </div>
-        <div class="stat-row">
-            <span>🛑 オフサイド</span> <span id="offB">0</span>
-            <div>
-                <button class="btn-small" onclick="updateStat('offB', 1, 'AWAY オフサイド')">＋</button>
-                <button class="btn-small" onclick="updateStat('offB', -1, '↩️ AWAY オフサイド取消')">－</button>
-            </div>
-        </div>
-
-        <div class="stat-row">
-            <span>🎯 枠内シュート</span> <span id="targetShotB">0</span>
-            <div>
-                <button class="btn-small" onclick="updateStat('targetShotB', 1, 'AWAY 枠内シュート')">＋</button>
-                <button class="btn-small" onclick="updateStat('targetShotB', -1, '↩️ AWAY 枠内シュート取消')">－</button>
-            </div>
-        </div>
-        <div class="stat-row">
-            <span>🛡️ GKセーブ</span> <span id="saveB">0</span>
-            <div>
-                <button class="btn-small" onclick="updateStat('saveB', 1, 'AWAY GKセーブ')">＋</button>
-                <button class="btn-small" onclick="updateStat('saveB', -1, '↩️ AWAY GKセーブ取消')">－</button>
-            </div>
-        </div>
-        <div class="stat-row">
-            <span>⚽ フリーキック</span> <span id="fkB">0</span>
-            <div>
-                <button class="btn-small" onclick="updateStat('fkB', 1, 'AWAY フリーキック')">＋</button>
-                <button class="btn-small" onclick="updateStat('fkB', -1, '↩️ AWAY フリーキック取消')">－</button>
-            </div>
-        </div>
-        <div class="stat-row">
-            <span>🤾 スローイン</span> <span id="throwB">0</span>
-            <div>
-                <button class="btn-small" onclick="updateStat('throwB', 1, 'AWAY スローイン')">＋</button>
-                <button class="btn-small" onclick="updateStat('throwB', -1, '↩️ AWAY スローイン取消')">－</button>
-            </div>
-        </div>
-        <div class="stat-row">
-            <span>⚔️ ボール奪取</span> <span id="tackleB">0</span>
-            <div>
-                <button class="btn-small" onclick="updateStat('tackleB', 1, 'AWAY ボール奪取')">＋</button>
-                <button class="btn-small" onclick="updateStat('tackleB', -1, '↩️ AWAY ボール奪取取消')">－</button>
-            </div>
-        </div>
-
-        <div style="text-align:center; font-size:12px; margin-top:20px; font-weight: bold;">PK戦 (クリックで ◯ / ✖)</div>
-        <div class="pk-area" id="pkB">
-            <div class="pk-box" onclick="togglePK(this)">-</div><div class="pk-box" onclick="togglePK(this)">-</div><div class="pk-box" onclick="togglePK(this)">-</div><div class="pk-box" onclick="togglePK(this)">-</div><div class="pk-box" onclick="togglePK(this)">-</div>
-        </div>
-    </div>
-</div>
-
-<script>
-    let timerInterval, seconds = 0, isRunning = false;
-    let isHalfTime = false;
-    let additionalMinutes = 0;
-    let activeTeam = 'NONE', possA_sec = 0, possB_sec = 0;
-    let adminPin = localStorage.getItem('adminPin') || "0827";
-    
-    let totalLossSeconds = 0;
-
-    function toggleUltraMode() {
-        const isUltra = document.body.classList.toggle('ultra-mode');
-        localStorage.setItem('ultraMode', isUltra ? 'enabled' : 'disabled');
-        logAction(isUltra ? "⚡ ULTRA MODE 有効化" : "⚡ ULTRA MODE 解除");
-    }
-
-    if (localStorage.getItem('ultraMode') === 'enabled') {
-        document.body.classList.add('ultra-mode');
-    }
-
-    function updatePageTitle() {
-        const now = new Date();
-        const timeString = now.toTimeString().split(' ')[0];
-        const matchTime = document.getElementById('timerDisplay').innerText;
-        
-        let statusText = isHalfTime ? "HT" : matchTime;
-        if (!isHalfTime && additionalMinutes > 0) statusText += ` +${additionalMinutes}'`;
-        
-        document.getElementById('pageTitle').innerText = `${timeString} [${statusText}]`;
-        document.getElementById('headerSubInfo').innerText = `現在時刻: ${timeString} | 試合時間: [${statusText}]`;
-    }
-
-    function formatTime(sec) {
-        let m = Math.floor(sec / 60).toString().padStart(2, '0');
-        let s = (sec % 60).toString().padStart(2, '0');
-        return `${m}:${s}`;
-    }
-
-    function startTimer() {
-        if (!isRunning) {
-            if (isHalfTime) {
-                isHalfTime = false;
-                document.getElementById('htBanner').style.display = 'none';
-                logAction("▶ 後半戦スタート");
-            } else {
-                logAction("▶ 試合再開/スタート");
-            }
-            
-            isRunning = true;
-            timerInterval = setInterval(() => {
-                seconds++;
-                document.getElementById('timerDisplay').innerText = formatTime(seconds);
-                if (activeTeam === 'HOME') possA_sec++;
-                else if (activeTeam === 'AWAY') possB_sec++;
+    <div id="app" class="h-screen flex flex-col">
+        <!-- ヘッダー / メニューナビゲーション -->
+        <header class="bg-slate-800 text-white px-4 py-2 flex justify-between items-center shadow-md">
+            <div class="flex items-center space-x-4">
+                <span class="font-bold text-xl tracking-wider text-blue-400">⚡ SUPER POS 34+</span>
                 
-                updatePossessionUI();
-                updatePageTitle();
-                checkTimeUp();
-            }, 1000);
-        }
-    }
+                <!-- 画面切替タブ -->
+                <nav class="flex space-x-1 bg-slate-700 p-1 rounded-lg text-xs font-bold">
+                    <button id="tab-pos-btn" onclick="switchTab('pos')" class="px-3 py-1.5 rounded bg-blue-600 text-white shadow">🛒 レジ会計</button>
+                    <button id="tab-master-btn" onclick="switchTab('master')" class="px-3 py-1.5 rounded text-gray-300 hover:text-white">📦 商品登録・管理</button>
+                </nav>
 
-    function stopTimer() {
-        if (isRunning) {
-            isRunning = false;
-            clearInterval(timerInterval);
-            logAction("⏸ 時計一時停止");
-        }
-    }
+                <span id="offline-badge" class="px-2 py-0.5 text-xs rounded bg-green-500 text-white font-semibold">● ONLINE</span>
+                <span id="refund-badge" class="hidden px-2 py-0.5 text-xs rounded bg-red-600 text-white font-bold animate-pulse">［返品モード中］</span>
+            </div>
+            
+            <div class="flex items-center space-x-2 text-sm">
+                <button onclick="toggleSound()" id="sound-btn" class="bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded flex items-center">
+                    🔊 音声: ON
+                </button>
+                <button onclick="toggleDarkMode()" class="bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded">
+                    🌙/☀️ テーマ
+                </button>
+                <button onclick="openManagerModal()" class="bg-amber-600 hover:bg-amber-700 px-3 py-1 rounded font-bold">
+                    🔒 管理者認証
+                </button>
+                <button onclick="openZReport()" class="bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded font-bold">
+                    📊 売上集計
+                </button>
+            </div>
+        </header>
 
-    function resetTimer() {
-        stopTimer();
-        seconds = 0; possA_sec = 0; possB_sec = 0; activeTeam = 'NONE';
-        isHalfTime = false; additionalMinutes = 0; totalLossSeconds = 0;
-        document.getElementById('htBanner').style.display = 'none';
-        document.getElementById('atBanner').style.display = 'none';
-        document.getElementById('estimatedAT').innerText = "0";
-        document.getElementById('timerDisplay').innerText = formatTime(seconds);
-        document.getElementById('pitchMarkers').innerHTML = "";
+        <!-- メインコンテンツエリア -->
+        <div class="flex-1 overflow-hidden relative">
 
-        ['targetShotA', 'targetShotB', 'saveA', 'saveB', 'fkA', 'fkB', 'throwA', 'throwB', 'tackleA', 'tackleB', 'foulA', 'foulB', 'shotA', 'shotB', 'ckA', 'ckB', 'offA', 'offB', 'scoreA', 'scoreB'].forEach(id => {
-            let el = document.getElementById(id);
-            if (el) el.innerText = "0";
-        });
+            <!-- ================= PAGE 1: レジ会計画面 ================= -->
+            <div id="page-pos" class="h-full flex">
+                <!-- 左側: 商品選択 & クイック棚 -->
+                <div class="w-7/12 p-4 flex flex-col justify-between border-r dark:border-gray-700 bg-white dark:bg-gray-800">
+                    <div>
+                        <!-- バーコード ＆ 検索バー -->
+                        <div class="grid grid-cols-12 gap-2 mb-3">
+                            <input type="text" id="barcode-input" placeholder="JANコード直接入力" 
+                                   class="col-span-4 p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm focus:ring-2 focus:ring-blue-500"
+                                   onkeypress="if(event.key==='Enter') scanBarcode()">
+                            <input type="text" id="search-input" placeholder="商品名で検索..." 
+                                   class="col-span-6 p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                                   oninput="filterProducts()">
+                            <button onclick="scanBarcode()" class="col-span-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">スキャン</button>
+                        </div>
 
-        updatePossessionUI();
-        updatePageTitle();
-        logAction("🔄 タイマー＆スタッツをリセット");
-    }
+                        <!-- オプションボタン -->
+                        <div class="flex space-x-2 mb-3">
+                            <button onclick="addBag(5)" class="bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200 text-xs px-2 py-1.5 rounded border border-amber-300">🛍️ 袋S (¥5)</button>
+                            <button onclick="addBag(10)" class="bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200 text-xs px-2 py-1.5 rounded border border-amber-300">🛍️ 袋L (¥10)</button>
+                            <button onclick="addGiftWrap(150)" class="bg-pink-100 dark:bg-pink-900/40 text-pink-800 dark:text-pink-200 text-xs px-2 py-1.5 rounded border border-pink-300">🎁 ギフト (¥150)</button>
+                            <button onclick="openCustomItemModal()" class="bg-slate-200 dark:bg-slate-700 text-xs px-2 py-1.5 rounded">➕ 非登録商品入力</button>
+                        </div>
 
-    function addLossTime(sec) {
-        totalLossSeconds += sec;
-        let estMin = Math.round(totalLossSeconds / 60);
-        document.getElementById('estimatedAT').innerText = estMin;
-    }
+                        <!-- クイック商品パネル -->
+                        <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">クイック商品棚</h3>
+                        <div id="product-grid" class="grid grid-cols-3 gap-2 overflow-y-auto max-h-[calc(100vh-280px)] p-1">
+                            <!-- JSで動的生成 -->
+                        </div>
+                    </div>
 
-    function checkTimeUp() {
-        let targetMin = parseInt(document.getElementById('halfDurationSelect').value, 10);
-        if (seconds === targetMin * 60) {
-            blowWhistle();
-            logAction(`⏱️ 規定時間 (${targetMin}分) 経過！タイムアップ！`);
-        }
-    }
+                    <!-- 下部特殊機能ボタン -->
+                    <div class="grid grid-cols-5 gap-2 pt-3 border-t dark:border-gray-700">
+                        <button onclick="openMemberModal()" class="bg-indigo-600 text-white py-2 rounded text-xs font-bold hover:bg-indigo-700">👤 会員<br><span id="member-status" class="text-[10px] font-normal">未認証</span></button>
+                        <button onclick="holdCart()" class="bg-orange-500 text-white py-2 rounded text-xs font-bold hover:bg-orange-600">⏸️ カート保留</button>
+                        <button onclick="openHoldList()" class="bg-orange-600 text-white py-2 rounded text-xs font-bold hover:bg-orange-700">📋 呼出 (<span id="hold-count">0</span>)</button>
+                        <button onclick="openDrawer()" class="bg-gray-600 text-white py-2 rounded text-xs font-bold hover:bg-gray-700">🔓 ドロワー開放</button>
+                        <button onclick="toggleRefundMode()" class="bg-rose-700 text-white py-2 rounded text-xs font-bold hover:bg-rose-800">🔄 返品モード</button>
+                    </div>
+                </div>
 
-    /* 得点追加 (詳細なし・ワンタップ追加) */
-    function addGoalDetail(team, elId) {
-        updateStat(elId, 1);
-        logAction(`${team} ゴール！ ⚽`);
-        addLossTime(40);
-    }
+                <!-- 右側: 明細カート & 決済計算 -->
+                <div class="w-5/12 bg-slate-50 dark:bg-gray-900 p-4 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center pb-2 border-b dark:border-gray-700">
+                            <h2 class="font-bold text-lg">購入明細</h2>
+                            <div class="space-x-1">
+                                <button onclick="toggleTaxFree()" id="taxfree-btn" class="px-2 py-1 text-xs border rounded bg-white dark:bg-gray-800">免税: OFF</button>
+                                <button onclick="clearCart()" class="px-2 py-1 text-xs bg-red-100 text-red-600 rounded hover:bg-red-200">全消去</button>
+                            </div>
+                        </div>
 
-    function addCardDetail(team, elId, cardType) {
-        let playerNum = prompt(`${team} ${cardType} 対象の背番号または名前を入力:`);
-        updateStat(elId, 1);
-        logAction(`${cardType} -> ${team} [背番号: ${playerNum || '不明'}]`);
-        addLossTime(20);
-    }
+                        <div id="cart-items" class="overflow-y-auto max-h-[calc(100vh-420px)] my-2 space-y-2">
+                            <!-- JSで動的描画 -->
+                        </div>
+                    </div>
 
-    function addSubDetail(team, elId) {
-        let pOut = prompt(`${team} 交代 OUT 選手の背番号:`);
-        let pIn = prompt(`${team} 交代 IN 選手の背番号:`);
-        updateStat(elId, -1);
-        logAction(`🔄 ${team} 選手交代: [OUT: #${pOut || '?'}] ➔ [IN: #${pIn || '?'}]`);
-        addLossTime(30);
-    }
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-inner border dark:border-gray-700 space-y-2">
+                        <div class="flex space-x-2 text-xs">
+                            <button onclick="applyDiscount('percent')" class="flex-1 bg-amber-500 text-white py-1 rounded">％割引</button>
+                            <button onclick="applyDiscount('fixed')" class="flex-1 bg-amber-600 text-white py-1 rounded">値引き(円)</button>
+                            <button onclick="usePoints()" class="flex-1 bg-indigo-500 text-white py-1 rounded">pt利用</button>
+                        </div>
 
-    function recordPitchEvent(e) {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+                        <div class="text-xs space-y-1 text-gray-600 dark:text-gray-300 pt-1 border-t dark:border-gray-700">
+                            <div class="flex justify-between"><span>小計 (税抜):</span><span id="subtotal-val">¥0</span></div>
+                            <div class="flex justify-between"><span>消費税:</span><span id="tax-val">¥0</span></div>
+                            <div class="flex justify-between text-amber-600"><span>値引き:</span><span id="discount-val">-¥0</span></div>
+                            <div class="flex justify-between text-indigo-500"><span>獲得予定pt:</span><span id="points-val">0 pt</span></div>
+                        </div>
 
-        const isGoal = confirm("この記録は「ゴール」ですか？\n[OK] = ゴール(黄) / [キャンセル] = シュート(赤)");
-        
-        const marker = document.createElement('div');
-        marker.className = `pitch-marker ${isGoal ? 'marker-goal' : 'marker-shot'}`;
-        marker.style.left = `${x}px`;
-        marker.style.top = `${y}px`;
-        
-        document.getElementById('pitchMarkers').appendChild(marker);
-        logAction(`📍 位置マップ記録: ${isGoal ? '⚽ ゴール位置' : '👟 シュート位置'}`);
-    }
+                        <div class="flex justify-between items-baseline pt-2 border-t dark:border-gray-700">
+                            <span class="font-bold text-lg">合計 (税込):</span>
+                            <span id="total-val" class="font-black text-3xl text-blue-600 dark:text-blue-400">¥0</span>
+                        </div>
 
-    function generateMatchReport() {
-        let teamA = document.getElementById('teamAName').innerText;
-        let teamB = document.getElementById('teamBName').innerText;
-        let scoreA = document.getElementById('scoreA').innerText;
-        let scoreB = document.getElementById('scoreB').innerText;
-        let pA = document.getElementById('barA').innerText;
-        let pB = document.getElementById('barB').innerText;
-        
-        let report = `【試合結果速報】\n` +
-                     `${teamA} ${scoreA} - ${scoreB} ${teamB}\n` +
-                     `------------------------\n` +
-                     `■ ポゼッション: ${teamA} ${pA} - ${pB} ${teamB}\n` +
-                     `■ シュート数: ${teamA} ${document.getElementById('shotA').innerText} - ${document.getElementById('shotB').innerText} ${teamB}\n` +
-                     `■ 枠内シュート: ${teamA} ${document.getElementById('targetShotA').innerText} - ${document.getElementById('targetShotB').innerText} ${teamB}\n` +
-                     `■ GKセーブ: ${teamA} ${document.getElementById('saveA').innerText} - ${document.getElementById('saveB').innerText} ${teamB}\n` +
-                     `■ フリーキック: ${teamA} ${document.getElementById('fkA').innerText} - ${document.getElementById('fkB').innerText} ${teamB}\n` +
-                     `■ スローイン: ${teamA} ${document.getElementById('throwA').innerText} - ${document.getElementById('throwB').innerText} ${teamB}\n` +
-                     `■ ボール奪取: ${teamA} ${document.getElementById('tackleA').innerText} - ${document.getElementById('tackleB').innerText} ${teamB}\n` +
-                     `■ ファウル: ${teamA} ${document.getElementById('foulA').innerText} - ${document.getElementById('foulB').innerText} ${teamB}\n` +
-                     `■ イエローカード: ${teamA} ${document.getElementById('yellowA').innerText} - ${document.getElementById('yellowB').innerText} ${teamB}\n` +
-                     `■ レッドカード: ${teamA} ${document.getElementById('redA').innerText} - ${document.getElementById('redB').innerText} ${teamB}\n\n` +
-                     `【主な経過・ログ】\n` + document.getElementById('matchLog').value;
+                        <div class="grid grid-cols-2 gap-2 pt-2">
+                            <button onclick="processPayment('cash')" class="bg-green-600 hover:bg-green-700 text-white py-3 rounded font-bold text-sm shadow">💵 現金会計</button>
+                            <button onclick="processPayment('card')" class="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded font-bold text-sm shadow">💳 クレジット</button>
+                            <button onclick="processPayment('qr')" class="bg-red-500 hover:bg-red-600 text-white py-2 rounded font-bold text-xs shadow">📱 QR/電子マネー</button>
+                            <button onclick="processPayment('split')" class="bg-purple-600 hover:bg-purple-700 text-white py-2 rounded font-bold text-xs shadow">🔀 分割/併用</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        navigator.clipboard.writeText(report).then(() => {
-            alert("📋 マッチレポートをクリップボードにコピーしました！そのままLINEやSNSに貼り付けできます。");
-        }).catch(() => {
-            alert("レポート作成完了:\n\n" + report);
-        });
-    }
+            <!-- ================= PAGE 2: 商品登録・マスター管理画面 ================= -->
+            <div id="page-master" class="h-full hidden flex flex-col p-6 overflow-y-auto bg-slate-50 dark:bg-gray-900">
+                <div class="max-w-6xl mx-auto w-full space-y-6">
+                    
+                    <!-- タイトル & 操作アクション -->
+                    <div class="flex justify-between items-center border-b pb-4 dark:border-gray-700">
+                        <div>
+                            <h2 class="text-2xl font-bold">📦 商品マスター管理・新規登録</h2>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">レジで販売する商品の登録、価格変更、在庫管理を行います。</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="exportCSV()" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-emerald-700">📥 CSVエクスポート</button>
+                            <button onclick="importCSV()" class="bg-sky-600 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-sky-700">📤 CSV一括インポート</button>
+                        </div>
+                    </div>
 
-    function updateStat(id, change, msg) {
-        let el = document.getElementById(id);
-        if (!el) return;
-        let currentVal = parseInt(el.innerText) || 0;
-        if (currentVal + change < 0) return;
-        el.innerText = currentVal + change;
-        if (msg) logAction(msg);
-    }
+                    <!-- 登録フォーム ＆ 一覧表示の2カラムレイアウト -->
+                    <div class="grid grid-cols-12 gap-6">
+                        
+                        <!-- 左側: 新規商品登録フォーム -->
+                        <div class="col-span-4 bg-white dark:bg-gray-800 p-5 rounded-lg shadow border dark:border-gray-700 space-y-4">
+                            <h3 class="font-bold text-base border-b pb-2 dark:border-gray-700 flex items-center">
+                                <span class="bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2">＋</span>
+                                商品新規登録
+                            </h3>
+                            
+                            <form id="product-form" onsubmit="saveProduct(event)" class="space-y-3 text-xs">
+                                <input type="hidden" id="form-product-id">
 
-    function setPossession(team) {
-        activeTeam = team;
-        document.getElementById('possBtnA').style.border = (team === 'HOME') ? '2px solid #fff' : 'none';
-        document.getElementById('possBtnB').style.border = (team === 'AWAY') ? '2px solid #fff' : 'none';
-    }
-    
-    function updatePossessionUI() {
-        let total = possA_sec + possB_sec;
-        if (total > 0) {
-            let pctA = Math.round((possA_sec / total) * 100);
-            document.getElementById('barA').style.width = pctA + '%';
-            document.getElementById('barA').innerText = pctA + '%';
-            document.getElementById('barB').style.width = (100 - pctA) + '%';
-            document.getElementById('barB').innerText = (100 - pctA) + '%';
-        }
-    }
+                                <div>
+                                    <label class="block font-bold mb-1">JAN/バーコード *</label>
+                                    <div class="flex space-x-1">
+                                        <input type="text" id="form-jan" required placeholder="例: 4901234567890" class="flex-1 p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+                                        <button type="button" onclick="generateRandomJAN()" class="bg-gray-200 dark:bg-gray-700 px-2 rounded hover:bg-gray-300">自動生成</button>
+                                    </div>
+                                </div>
 
-    function blowWhistle() {
-        logAction("🔊 ホイッスル吹鳴");
-        try {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(2500, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(2000, ctx.currentTime + 0.15);
-            gain.gain.setValueAtTime(0.3, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start();
-            osc.stop(ctx.currentTime + 0.3);
-        } catch(e) {}
-    }
+                                <div>
+                                    <label class="block font-bold mb-1">商品名 *</label>
+                                    <input type="text" id="form-name" required placeholder="例: プレミアムコーヒー 180g" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+                                </div>
 
-    function tossCoin() {
-        let result = Math.random() < 0.5 ? '表 (HOME側 選択権)' : '裏 (AWAY側 選択権)';
-        alert(`コイントス結果: ${result}`);
-        logAction(`🪙 コイントス実施: ${result}`);
-    }
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block font-bold mb-1">価格 (税抜) *</label>
+                                        <input type="number" id="form-price" required placeholder="298" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+                                    </div>
+                                    <div>
+                                        <label class="block font-bold mb-1">消費税率 *</label>
+                                        <select id="form-tax" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+                                            <option value="0.08">軽減税率 (8%)</option>
+                                            <option value="0.10" selected>標準税率 (10%)</option>
+                                        </select>
+                                    </div>
+                                </div>
 
-    function togglePK(box) {
-        if (box.innerText === '-') { box.innerText = '◯'; box.style.background = '#4caf50'; }
-        else if (box.innerText === '◯') { box.innerText = '✖'; box.style.background = '#f44336'; }
-        else { box.innerText = '-'; box.style.background = '#444'; }
-    }
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block font-bold mb-1">初期在庫数</label>
+                                        <input type="number" id="form-stock" value="50" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+                                    </div>
+                                    <div>
+                                        <label class="block font-bold mb-1">カテゴリ</label>
+                                        <select id="form-category" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+                                            <option value="food">食品・飲料</option>
+                                            <option value="goods">日用品・雑貨</option>
+                                            <option value="book">書籍・雑誌</option>
+                                            <option value="other">その他</option>
+                                        </select>
+                                    </div>
+                                </div>
 
-    function logAction(text) {
-        let logArea = document.getElementById('matchLog');
-        let timeStr = document.getElementById('timerDisplay').innerText;
-        logArea.value += `\n[${timeStr}] ${text}`;
-        logArea.scrollTop = logArea.scrollHeight;
-    }
+                                <div class="pt-2">
+                                    <label class="inline-flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" id="form-agelimited" class="rounded text-blue-600">
+                                        <span class="font-bold text-red-600 dark:text-red-400">年齢制限商品 (酒・たばこ等 20歳以上)</span>
+                                    </label>
+                                </div>
 
-    function openAdminMenu(e) {
-        e.preventDefault();
-        let inputPin = prompt("管理者PINを入力してください:");
-        if (inputPin === adminPin) document.getElementById('adminModal').style.display = 'flex';
-        else if (inputPin !== null) alert("PINが間違っています。");
-    }
+                                <div class="pt-3 flex space-x-2">
+                                    <button type="button" onclick="resetProductForm()" class="flex-1 bg-gray-300 dark:bg-gray-700 py-2 rounded font-bold">クリア</button>
+                                    <button type="submit" class="flex-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded font-bold">商品マスターに保存</button>
+                                </div>
+                            </form>
+                        </div>
 
-    function setHalfTimeStatus() {
-        if (!isHalfTime) {
-            stopTimer();
-            isHalfTime = true;
-            document.getElementById('htBanner').style.display = 'block';
-            document.getElementById('timerDisplay').innerText = "HT";
-            logAction("☕ ハーフタイム（HT）開始");
-        } else {
-            isHalfTime = false;
-            document.getElementById('htBanner').style.display = 'none';
-            document.getElementById('timerDisplay').innerText = formatTime(seconds);
-            logAction("☕ ハーフタイム（HT）終了");
-        }
-    }
+                        <!-- 右側: 登録済み商品テーブル -->
+                        <div class="col-span-8 bg-white dark:bg-gray-800 p-5 rounded-lg shadow border dark:border-gray-700 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-center pb-3 mb-3 border-b dark:border-gray-700">
+                                    <h3 class="font-bold text-base">📋 登録済み商品一覧 (<span id="master-count">0</span>件)</h3>
+                                    <input type="text" id="master-search" oninput="renderMasterTable()" placeholder="商品名/JANで絞り込み..." class="p-1.5 border rounded text-xs dark:bg-gray-700 dark:border-gray-600 w-48">
+                                </div>
 
-    function toggleAdditionalTime() {
-        let input = prompt("アディショナルタイム（分）を入力してください:", additionalMinutes);
-        if (input !== null) {
-            let mins = parseInt(input, 10);
-            if (!isNaN(mins) && mins > 0) {
-                additionalMinutes = mins;
-                document.getElementById('atDisplayMinutes').innerText = mins;
-                document.getElementById('atBanner').style.display = 'block';
-                logAction(`⏱️ アディショナルタイム +${mins}分 表示`);
+                                <div class="overflow-x-auto max-h-[500px]">
+                                    <table class="w-full text-left text-xs border-collapse">
+                                        <thead>
+                                            <tr class="bg-gray-100 dark:bg-gray-700 border-b dark:border-gray-600">
+                                                <th class="p-2">JAN</th>
+                                                <th class="p-2">商品名</th>
+                                                <th class="p-2">単価(税抜)</th>
+                                                <th class="p-2">税率</th>
+                                                <th class="p-2">在庫</th>
+                                                <th class="p-2">属性</th>
+                                                <th class="p-2 text-right">操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="master-table-body" class="divide-y dark:divide-gray-700">
+                                            <!-- JS動的挿入 -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== ダイアログモーダル群 (共通) ===== -->
+    <!-- (前回のモーダル設定を保持) -->
+    <div id="age-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-md w-full text-center">
+            <h3 class="text-xl font-bold text-red-600 mb-2">⚠️ 年齢確認が必要です</h3>
+            <p class="text-sm mb-4">酒類・たばこ等の年齢制限商品が含まれています。<br>お客様は20歳以上ですか？</p>
+            <div class="flex space-x-4">
+                <button onclick="confirmAge(false)" class="flex-1 bg-gray-400 text-white py-2 rounded">いいえ (購入不可)</button>
+                <button onclick="confirmAge(true)" class="flex-1 bg-red-600 text-white py-2 rounded font-bold">はい (20歳以上)</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cash-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-sm w-full space-y-4">
+            <h3 class="font-bold text-lg">💵 現金お会計</h3>
+            <div>
+                <label class="text-xs text-gray-500">お支払い請求額</label>
+                <div id="cash-modal-total" class="text-2xl font-bold text-blue-600">¥0</div>
+            </div>
+            <div>
+                <label class="text-xs text-gray-500">預かり金額入力</label>
+                <input type="number" id="tendered-input" oninput="calcChange()" class="w-full border p-2 text-xl font-bold rounded dark:bg-gray-700" placeholder="0">
+            </div>
+            <div class="flex justify-between items-center text-lg font-bold border-t pt-2">
+                <span>お釣り:</span>
+                <span id="change-val" class="text-green-600">¥0</span>
+            </div>
+            <div class="flex space-x-2">
+                <button onclick="closeModal('cash-modal')" class="flex-1 bg-gray-300 dark:bg-gray-700 py-2 rounded">キャンセル</button>
+                <button onclick="completeCashTransaction()" class="flex-1 bg-green-600 text-white py-2 rounded font-bold">会計完了</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="receipt-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+        <div class="bg-white text-gray-800 p-6 rounded-lg max-w-sm w-full font-mono text-sm shadow-xl space-y-3">
+            <div class="text-center border-b pb-2">
+                <h2 class="font-bold text-lg">SUPER POS STORE</h2>
+                <p class="text-xs text-gray-500">東京都千代田区1-1-1 / TEL: 03-0000-0000</p>
+                <p id="receipt-date" class="text-[10px] text-gray-400 mt-1"></p>
+            </div>
+            <div id="receipt-body" class="space-y-1 text-xs border-b pb-2"></div>
+            <div id="receipt-summary" class="space-y-1 text-xs"></div>
+            
+            <div class="pt-2 flex flex-col space-y-2 no-print">
+                <button onclick="window.print()" class="bg-blue-600 text-white py-1.5 rounded text-xs font-bold">🖨️ レシート印刷</button>
+                <button onclick="sendEReceipt()" class="bg-purple-600 text-white py-1.5 rounded text-xs font-bold">✉️ 電子レシート送信</button>
+                <button onclick="finishReceipt()" class="bg-gray-700 text-white py-1.5 rounded text-xs">閉じて新規会計へ</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="manager-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-xs w-full text-center space-y-3">
+            <h3 class="font-bold text-base">🔒 管理者パスコード認証</h3>
+            <p class="text-xs text-gray-500">パスコード "1234" を入力してください</p>
+            <input type="password" id="pin-input" maxlength="4" class="text-center text-2xl tracking-widest border p-2 rounded w-full dark:bg-gray-700">
+            <div class="flex space-x-2">
+                <button onclick="closeModal('manager-modal')" class="flex-1 bg-gray-300 dark:bg-gray-700 py-1.5 rounded text-xs">キャンセル</button>
+                <button onclick="verifyPin()" class="flex-1 bg-amber-600 text-white py-1.5 rounded text-xs font-bold">承認</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="zreport-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-md w-full space-y-4">
+            <h3 class="font-bold text-lg border-b pb-2">📊 日計・売上集計レポート (Zレポート)</h3>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between"><span>本日総売上高:</span><span id="z-total" class="font-bold">¥0</span></div>
+                <div class="flex justify-between"><span>総取引件数:</span><span id="z-count">0 件</span></div>
+                <div class="flex justify-between text-xs text-gray-500"><span>内 現金決済:</span><span id="z-cash">¥0</span></div>
+                <div class="flex justify-between text-xs text-gray-500"><span>内 キャッシュレス:</span><span id="z-card">¥0</span></div>
+            </div>
+            <button onclick="closeModal('zreport-modal')" class="w-full bg-slate-700 text-white py-2 rounded text-xs">閉じる</button>
+        </div>
+    </div>
+
+    <div id="member-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-xs w-full space-y-3">
+            <h3 class="font-bold text-base">👤 会員証スキャン</h3>
+            <input type="text" id="member-id-input" placeholder="会員番号 (例: MEM01)" class="w-full border p-2 rounded text-sm dark:bg-gray-700">
+            <div class="flex space-x-2">
+                <button onclick="closeModal('member-modal')" class="flex-1 bg-gray-300 dark:bg-gray-700 py-1.5 rounded text-xs">キャンセル</button>
+                <button onclick="applyMember()" class="flex-1 bg-indigo-600 text-white py-1.5 rounded text-xs font-bold">認証</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-item-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-xs w-full space-y-3">
+            <h3 class="font-bold text-base">➕ カスタム金額商品入力</h3>
+            <input type="text" id="custom-name" placeholder="商品名" class="w-full border p-2 rounded text-sm dark:bg-gray-700">
+            <input type="number" id="custom-price" placeholder="価格 (税抜)" class="w-full border p-2 rounded text-sm dark:bg-gray-700">
+            <div class="flex space-x-2">
+                <button onclick="closeModal('custom-item-modal')" class="flex-1 bg-gray-300 dark:bg-gray-700 py-1.5 rounded text-xs">キャンセル</button>
+                <button onclick="addCustomItem()" class="flex-1 bg-blue-600 text-white py-1.5 rounded text-xs font-bold">カート追加</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript ロジック -->
+    <script>
+        // マスター商品データ
+        let products = [
+            { id: '101', jan: '49012341', name: '高級お弁当', price: 680, taxRate: 0.08, category: 'food', stock: 15, ageLimit: false },
+            { id: '102', jan: '49012342', name: '緑茶 500ml', price: 150, taxRate: 0.08, category: 'food', stock: 40, ageLimit: false },
+            { id: '103', jan: '49012343', name: '缶ビール 350ml', price: 220, taxRate: 0.10, category: 'food', stock: 24, ageLimit: true },
+            { id: '104', jan: '49012344', name: '雑誌 月刊POS', price: 800, taxRate: 0.10, category: 'book', stock: 5, ageLimit: false },
+            { id: '105', jan: '49012345', name: '高級和牛パック', price: 2500, taxRate: 0.08, category: 'food', stock: 3, ageLimit: false },
+            { id: '106', jan: '49012346', name: '傘 (ビニール)', price: 600, taxRate: 0.10, category: 'goods', stock: 10, ageLimit: false },
+        ];
+
+        let cart = [];
+        let holds = [];
+        let activeMember = null;
+        let isTaxFree = false;
+        let isRefundMode = false;
+        let soundEnabled = true;
+        let isManagerAuthenticated = false;
+        let discountAmount = 0;
+        let discountPercent = 0;
+        let usedPoints = 0;
+
+        let zReportData = { totalSales: 0, count: 0, cash: 0, card: 0 };
+
+        // --- 初期化 ---
+        window.onload = () => {
+            renderProducts(products);
+            renderMasterTable();
+            updateCartUI();
+        };
+
+        // --- タブ切り替え制御 ---
+        function switchTab(tabName) {
+            const pagePos = document.getElementById('page-pos');
+            const pageMaster = document.getElementById('page-master');
+            const btnPos = document.getElementById('tab-pos-btn');
+            const btnMaster = document.getElementById('tab-master-btn');
+
+            if (tabName === 'pos') {
+                pagePos.classList.remove('hidden');
+                pageMaster.classList.add('hidden');
+                btnPos.className = "px-3 py-1.5 rounded bg-blue-600 text-white shadow";
+                btnMaster.className = "px-3 py-1.5 rounded text-gray-300 hover:text-white";
+                renderProducts(products); // レジ棚再描画
             } else {
-                additionalMinutes = 0;
-                document.getElementById('atBanner').style.display = 'none';
+                pagePos.classList.add('hidden');
+                pageMaster.classList.remove('hidden');
+                btnMaster.className = "px-3 py-1.5 rounded bg-blue-600 text-white shadow";
+                btnPos.className = "px-3 py-1.5 rounded text-gray-300 hover:text-white";
+                renderMasterTable(); // マスターテーブル再描画
             }
         }
-    }
 
-    function resetLog() {
-        if(confirm("ログをすべて削除しますか？")) document.getElementById('matchLog').value = "ログをリセットしました...";
-    }
+        // --- 商品マスター機能 (登録・編集・削除・CSV) ---
 
-    function fastVarDecision(type) {
-        const wasRunning = isRunning;
-        stopTimer();
-        let teamA = document.getElementById('teamAName').innerText;
-        let teamB = document.getElementById('teamBName').innerText;
-        let detail = "";
-
-        switch (type) {
-            case 'GOAL_A': updateStat('scoreA', 1); detail = `📺 ${teamA}のゴール認定！`; break;
-            case 'GOAL_B': updateStat('scoreB', 1); detail = `📺 ${teamB}のゴール認定！`; break;
-            case 'NO_GOAL': alert("スコアを手動で調整してください。"); return;
-            case 'PK': detail = `📺 PK判定！`; break;
-            case 'RED_A': updateStat('redA', 1); detail = `📺 ${teamA}に退場処分！`; break;
-            case 'RED_B': updateStat('redB', 1); detail = `📺 ${teamB}に退場処分！`; break;
+        // JANランダム生成
+        function generateRandomJAN() {
+            const randomJan = '49' + Math.floor(Math.random() * 100000000000).toString().padStart(11, '0');
+            document.getElementById('form-jan').value = randomJan;
         }
-        logAction(detail);
-        addLossTime(60);
-        if (wasRunning) setTimeout(startTimer, 300);
-    }
 
-    function triggerReload(e) {
-        e.preventDefault();
-        if (confirm("ページを再読み込みしますか？")) location.reload();
-    }
+        // 商品保存 (新規 or 更新)
+        function saveProduct(event) {
+            event.preventDefault();
 
-    updatePageTitle();
-    setInterval(updatePageTitle, 1000);
-</script>
+            const editId = document.getElementById('form-product-id').value;
+            const jan = document.getElementById('form-jan').value.trim();
+            const name = document.getElementById('form-name').value.trim();
+            const price = parseFloat(document.getElementById('form-price').value);
+            const taxRate = parseFloat(document.getElementById('form-tax').value);
+            const stock = parseInt(document.getElementById('form-stock').value) || 0;
+            const category = document.getElementById('form-category').value;
+            const ageLimit = document.getElementById('form-agelimited').checked;
+
+            if (editId) {
+                // 編集
+                const idx = products.findIndex(p => p.id === editId);
+                if (idx !== -1) {
+                    products[idx] = { id: editId, jan, name, price, taxRate, category, stock, ageLimit };
+                }
+            } else {
+                // 新規作成
+                const newId = 'prod_' + Date.now();
+                products.push({ id: newId, jan, name, price, taxRate, category, stock, ageLimit });
+            }
+
+            playBeep(1200, 'sine');
+            resetProductForm();
+            renderMasterTable();
+            alert('商品マスターを更新しました！');
+        }
+
+        // フォームクリア
+        function resetProductForm() {
+            document.getElementById('form-product-id').value = '';
+            document.getElementById('product-form').reset();
+        }
+
+        // マスターテーブル描画
+        function renderMasterTable() {
+            const tbody = document.getElementById('master-table-body');
+            const query = document.getElementById('master-search').value.toLowerCase();
+
+            const filtered = products.filter(p => p.name.toLowerCase().includes(query) || p.jan.includes(query));
+            document.getElementById('master-count').innerText = filtered.length;
+
+            tbody.innerHTML = filtered.map(p => `
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <td class="p-2 font-mono text-[11px]">${p.jan}</td>
+                    <td class="p-2 font-bold">${p.name}</td>
+                    <td class="p-2">¥${p.price}</td>
+                    <td class="p-2">${p.taxRate * 100}%</td>
+                    <td class="p-2 font-bold ${p.stock < 10 ? 'text-red-500' : ''}">${p.stock}</td>
+                    <td class="p-2">${p.ageLimit ? '<span class="bg-red-100 text-red-600 px-1 rounded text-[10px]">20+</span>' : '-'}</td>
+                    <td class="p-2 text-right space-x-1">
+                        <button onclick="editProduct('${p.id}')" class="bg-amber-500 text-white px-2 py-0.5 rounded text-[10px]">編集</button>
+                        <button onclick="deleteProduct('${p.id}')" class="bg-red-600 text-white px-2 py-0.5 rounded text-[10px]">削除</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 編集フォーム呼び出し
+        function editProduct(id) {
+            const p = products.find(prod => prod.id === id);
+            if (!p) return;
+
+            document.getElementById('form-product-id').value = p.id;
+            document.getElementById('form-jan').value = p.jan;
+            document.getElementById('form-name').value = p.name;
+            document.getElementById('form-price').value = p.price;
+            document.getElementById('form-tax').value = p.taxRate;
+            document.getElementById('form-stock').value = p.stock;
+            document.getElementById('form-category').value = p.category;
+            document.getElementById('form-agelimited').checked = p.ageLimit;
+        }
+
+        // 商品削除
+        function deleteProduct(id) {
+            if (confirm('この商品をマスターから削除しますか？')) {
+                products = products.filter(p => p.id !== id);
+                renderMasterTable();
+            }
+        }
+
+        // CSV出力
+        function exportCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,JAN,商品名,価格,税率,在庫,カテゴリ,年齢制限\n";
+            products.forEach(p => {
+                csvContent += `${p.jan},${p.name},${p.price},${p.taxRate},${p.stock},${p.category},${p.ageLimit}\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `product_master_${Date.now()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // CSVインポート (シミュレーション)
+        function importCSV() {
+            alert('CSVインポート機能: CSVデータから一括商品読み込みを実行します（デモ動作）');
+            // サンプルデータ追加
+            products.push(
+                { id: 'imp_1', jan: '49099991', name: '輸入クラフトビール', price: 550, taxRate: 0.10, category: 'food', stock: 30, ageLimit: true },
+                { id: 'imp_2', jan: '49099992', name: '有機オーガニックナッツ', price: 320, taxRate: 0.08, category: 'food', stock: 50, ageLimit: false }
+            );
+            renderMasterTable();
+        }
+
+        // --- 以下、既存POS共通ロジック ---
+        function playBeep(freq = 800, type = 'sine', duration = 0.08) {
+            if (!soundEnabled) return;
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+                osc.stop(ctx.currentTime + duration);
+            } catch(e){}
+        }
+
+        function renderProducts(items) {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = items.map(p => `
+                <button onclick="tryAddToCart('${p.id}')" class="p-3 border rounded-lg bg-slate-50 hover:bg-blue-50 dark:bg-gray-700 dark:hover:bg-gray-600 text-left transition flex flex-col justify-between h-24">
+                    <div>
+                        <div class="font-bold text-sm truncate">${p.name}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">¥${p.price} (${p.taxRate*100}%)</div>
+                    </div>
+                    <div class="flex justify-between items-center text-[10px]">
+                        <span class="${p.stock < 10 ? 'text-red-500 font-bold' : 'text-gray-400'}">在庫:${p.stock}</span>
+                        ${p.ageLimit ? '<span class="bg-red-100 text-red-600 px-1 rounded">20+</span>' : ''}
+                    </div>
+                </button>
+            `).join('');
+        }
+
+        function tryAddToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            if (product.stock <= 0) {
+                alert('⚠️ 在庫切れです！');
+                return;
+            }
+
+            if (product.ageLimit && !cart.some(i => i.ageLimit)) {
+                pendingAgeProduct = product;
+                document.getElementById('age-modal').classList.remove('hidden');
+                return;
+            }
+
+            addToCart(product);
+        }
+
+        let pendingAgeProduct = null;
+        function confirmAge(isAdult) {
+            document.getElementById('age-modal').classList.add('hidden');
+            if (isAdult && pendingAgeProduct) {
+                addToCart(pendingAgeProduct);
+            } else {
+                alert('年齢確認が取れないためキャンセルしました');
+            }
+            pendingAgeProduct = null;
+        }
+
+        function addToCart(product) {
+            playBeep(1000, 'sine');
+            const existing = cart.find(i => i.id === product.id);
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            product.stock--;
+            renderProducts(products);
+            updateCartUI();
+        }
+
+        function scanBarcode() {
+            const input = document.getElementById('barcode-input');
+            const val = input.value.trim();
+            const product = products.find(p => p.jan === val);
+            if (product) {
+                tryAddToCart(product.id);
+                input.value = '';
+            } else {
+                alert('商品が見つかりません');
+            }
+        }
+
+        function filterProducts() {
+            const q = document.getElementById('search-input').value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(q) || p.jan.includes(q));
+            renderProducts(filtered);
+        }
+
+        function updateQty(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (!item) return;
+            item.qty += delta;
+            const orig = products.find(p => p.id === id);
+            if (orig) orig.stock -= delta;
+
+            if (item.qty <= 0) {
+                cart = cart.filter(i => i.id !== id);
+            }
+            playBeep(600, 'sine');
+            renderProducts(products);
+            updateCartUI();
+        }
+
+        function addBag(price) {
+            addToCart({ id: 'bag_'+price, name: `レジ袋 (${price}円)`, price: price, taxRate: 0.10, stock: 999, ageLimit: false });
+        }
+        function addGiftWrap(price) {
+            addToCart({ id: 'gift_'+price, name: 'ギフトラッピング', price: price, taxRate: 0.10, stock: 999, ageLimit: false });
+        }
+
+        function openCustomItemModal() { document.getElementById('custom-item-modal').classList.remove('hidden'); }
+        function addCustomItem() {
+            const name = document.getElementById('custom-name').value || '非登録商品';
+            const price = parseFloat(document.getElementById('custom-price').value) || 0;
+            addToCart({ id: 'custom_'+Date.now(), name: name, price: price, taxRate: 0.10, stock: 999, ageLimit: false });
+            closeModal('custom-item-modal');
+        }
+
+        function calculateTotals() {
+            let subtotal = 0;
+            let taxTotal = 0;
+
+            cart.forEach(item => {
+                const itemSubtotal = item.price * item.qty;
+                subtotal += itemSubtotal;
+                const effectiveTaxRate = isTaxFree ? 0 : item.taxRate;
+                taxTotal += itemSubtotal * effectiveTaxRate;
+            });
+
+            let grandTotal = subtotal + taxTotal;
+            let discountSum = discountAmount + (grandTotal * (discountPercent / 100)) + usedPoints;
+            grandTotal = Math.max(0, grandTotal - discountSum);
+
+            if (isRefundMode) grandTotal *= -1;
+
+            const earnedPoints = activeMember ? Math.floor(Math.max(0, grandTotal) * 0.01) : 0;
+
+            return { subtotal, taxTotal, discountSum, grandTotal, earnedPoints };
+        }
+
+        function updateCartUI() {
+            const cartContainer = document.getElementById('cart-items');
+            if (cart.length === 0) {
+                cartContainer.innerHTML = `<div class="text-center text-gray-400 py-10 text-sm">カートは空です</div>`;
+            } else {
+                cartContainer.innerHTML = cart.map(item => `
+                    <div class="flex justify-between items-center bg-white dark:bg-gray-800 p-2 rounded border dark:border-gray-700 text-sm">
+                        <div class="flex-1">
+                            <div class="font-bold">${item.name}</div>
+                            <div class="text-xs text-gray-500">¥${item.price} × ${item.qty} (税:${isTaxFree?0:item.taxRate*100}%)</div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="updateQty('${item.id}', -1)" class="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded font-bold">-</button>
+                            <span>${item.qty}</span>
+                            <button onclick="updateQty('${item.id}', 1)" class="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded font-bold">+</button>
+                            <button onclick="updateQty('${item.id}', -${item.qty})" class="text-red-500 font-bold ml-2">✕</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const totals = calculateTotals();
+            document.getElementById('subtotal-val').innerText = `¥${Math.round(totals.subtotal)}`;
+            document.getElementById('tax-val').innerText = `¥${Math.round(totals.taxTotal)}`;
+            document.getElementById('discount-val').innerText = `-¥${Math.round(totals.discountSum)}`;
+            document.getElementById('points-val').innerText = `${totals.earnedPoints} pt`;
+            document.getElementById('total-val').innerText = `¥${Math.round(totals.grandTotal)}`;
+        }
+
+        function clearCart() {
+            cart = [];
+            discountAmount = 0;
+            discountPercent = 0;
+            usedPoints = 0;
+            updateCartUI();
+        }
+
+        function toggleTaxFree() {
+            isTaxFree = !isTaxFree;
+            const btn = document.getElementById('taxfree-btn');
+            btn.innerText = `免税: ${isTaxFree ? 'ON (0%)' : 'OFF'}`;
+            btn.className = `px-2 py-1 text-xs border rounded ${isTaxFree ? 'bg-amber-500 text-white font-bold' : 'bg-white dark:bg-gray-800'}`;
+            updateCartUI();
+        }
+
+        function applyDiscount(type) {
+            if (type === 'percent') {
+                const p = prompt('割引率 (%) を入力してください:', '10');
+                if (p !== null) discountPercent = parseFloat(p) || 0;
+            } else {
+                const a = prompt('値引き額 (円) を入力してください:', '100');
+                if (a !== null) discountAmount = parseFloat(a) || 0;
+            }
+            updateCartUI();
+        }
+
+        function openMemberModal() { document.getElementById('member-modal').classList.remove('hidden'); }
+        function applyMember() {
+            const id = document.getElementById('member-id-input').value;
+            if (id) {
+                activeMember = { id: id, points: 500 };
+                document.getElementById('member-status').innerText = `認証済: ${id} (${activeMember.points}pt)`;
+                closeModal('member-modal');
+                playBeep(1200, 'sine');
+            }
+        }
+        function usePoints() {
+            if (!activeMember) { alert('先に会員スキャンを行ってください'); return; }
+            const pts = prompt(`利用ポイントを入力 (保有: ${activeMember.points}pt):`, '100');
+            if (pts) {
+                usedPoints = Math.min(activeMember.points, parseInt(pts) || 0);
+                updateCartUI();
+            }
+        }
+
+        function holdCart() {
+            if (cart.length === 0) return;
+            holds.push({ id: Date.now(), cart: [...cart] });
+            cart = [];
+            document.getElementById('hold-count').innerText = holds.length;
+            updateCartUI();
+            alert('会計を保留しました');
+        }
+        function openHoldList() {
+            if (holds.length === 0) { alert('保留中のカートはありません'); return; }
+            const restored = holds.pop();
+            cart = restored.cart;
+            document.getElementById('hold-count').innerText = holds.length;
+            updateCartUI();
+        }
+
+        function openDrawer() {
+            playBeep(300, 'square', 0.3);
+            alert('🔓 キャッシュドロワーを開放しました');
+        }
+
+        function toggleRefundMode() {
+            isRefundMode = !isRefundMode;
+            document.getElementById('refund-badge').classList.toggle('hidden', !isRefundMode);
+            updateCartUI();
+        }
+
+        function processPayment(type) {
+            if (cart.length === 0) { alert('カートが空です'); return; }
+            const totals = calculateTotals();
+
+            if (type === 'cash') {
+                document.getElementById('cash-modal-total').innerText = `¥${Math.round(totals.grandTotal)}`;
+                document.getElementById('cash-modal').classList.remove('hidden');
+            } else if (type === 'card' || type === 'qr') {
+                playBeep(1500, 'triangle', 0.2);
+                setTimeout(() => { completeTransaction(type, totals.grandTotal, 0); }, 800);
+            } else if (type === 'split') {
+                alert('併用払い: 現金とカード等の組み合わせ決済を行います');
+                completeTransaction('現金+カード併用', totals.grandTotal, 0);
+            }
+        }
+
+        function calcChange() {
+            const totals = calculateTotals();
+            const tendered = parseFloat(document.getElementById('tendered-input').value) || 0;
+            const change = tendered - totals.grandTotal;
+            document.getElementById('change-val').innerText = `¥${Math.max(0, Math.round(change))}`;
+        }
+
+        function completeCashTransaction() {
+            const totals = calculateTotals();
+            const tendered = parseFloat(document.getElementById('tendered-input').value) || 0;
+            if (tendered < totals.grandTotal && !isRefundMode) {
+                alert('預かり金額が不足しています');
+                return;
+            }
+            closeModal('cash-modal');
+            completeTransaction('現金', totals.grandTotal, tendered - totals.grandTotal);
+        }
+
+        function completeTransaction(payMethod, total, change) {
+            playBeep(1800, 'sine', 0.4);
+
+            zReportData.totalSales += total;
+            zReportData.count++;
+            if (payMethod === '現金') zReportData.cash += total;
+            else zReportData.card += total;
+
+            document.getElementById('receipt-date').innerText = new Date().toLocaleString();
+            document.getElementById('receipt-body').innerHTML = cart.map(i => `
+                <div class="flex justify-between">
+                    <span>${i.name} x${i.qty}</span>
+                    <span>¥${i.price * i.qty}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('receipt-summary').innerHTML = `
+                <div class="flex justify-between font-bold border-t pt-1"><span>合計:</span><span>¥${Math.round(total)}</span></div>
+                <div class="flex justify-between text-[11px]"><span>決済方法:</span><span>${payMethod}</span></div>
+                ${payMethod === '現金' ? `<div class="flex justify-between text-[11px]"><span>お釣り:</span><span>¥${Math.round(change)}</span></div>` : ''}
+            `;
+
+            document.getElementById('receipt-modal').classList.remove('hidden');
+        }
+
+        function finishReceipt() {
+            closeModal('receipt-modal');
+            clearCart();
+        }
+
+        function sendEReceipt() {
+            const email = prompt('送信先のメールアドレスを入力してください:', 'customer@example.com');
+            if (email) alert(`📧 ${email} に電子レシートを送信しました！`);
+        }
+
+        function openManagerModal() { document.getElementById('manager-modal').classList.remove('hidden'); }
+        function verifyPin() {
+            const pin = document.getElementById('pin-input').value;
+            if (pin === '1234') {
+                isManagerAuthenticated = true;
+                alert('🔑 管理者承認が完了しました');
+                closeModal('manager-modal');
+            } else {
+                alert('パスコードが正しくありません');
+            }
+        }
+
+        function openZReport() {
+            document.getElementById('z-total').innerText = `¥${Math.round(zReportData.totalSales)}`;
+            document.getElementById('z-count').innerText = `${zReportData.count} 件`;
+            document.getElementById('z-cash').innerText = `¥${Math.round(zReportData.cash)}`;
+            document.getElementById('z-card').innerText = `¥${Math.round(zReportData.card)}`;
+            document.getElementById('zreport-modal').classList.remove('hidden');
+        }
+
+        function toggleDarkMode() { document.documentElement.classList.toggle('dark'); }
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-btn').innerText = `🔊 音声: ${soundEnabled ? 'ON' : 'OFF'}`;
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    </script>
 </body>
 </html>
